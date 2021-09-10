@@ -86,5 +86,5 @@ app.post('/api/carrito/guardar/id_producto', (req, res) => {
     
 });
 app.delete('/api/carrito/borrar/:id', (req, res) => {
-    
+    Memoria.deleteById(req.body.id)
 });
