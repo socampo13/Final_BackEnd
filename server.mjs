@@ -37,7 +37,7 @@ server.listen(PORT, error => {
     } 
     console.log(`Server running on port ${PORT}`);
 });
-////////////////////////////////////////////
+////////////////////////////////////////////ROUTER PRODUCTOS//////////////////////////////////////////
 app.get('/', (req, res) => {
     res.render('main.hbs')
 });
@@ -69,4 +69,22 @@ app.put('/api/productos/actualizar/:id', (req, res) => {
 });
 app.delete('/api/productos/borrar/:id', (req, res) => {
     Memoria.deleteById(req.body.id)
+});
+//////////////////////////////////////////////ROUTER CARRITO/////////////////////////////////////////////
+app.get('/api/carrito/listar/:id', (req, res) => {
+    const resultCarrito = memoria.getElementById(req.params.id);
+
+    if(resultCarrito.length > 0){
+        res.status(200).send(JSON.stringify(resultCarrito[0]))
+    } else {
+        resultCarrito.status(404).send({error: 'No items added to cart'})
+    }
+});
+app.post('/api/carrito/guardar/id_producto', (req, res) => {
+    const productoCarrito = req.body;
+
+    
+});
+app.delete('/api/carrito/borrar/:id', (req, res) => {
+    
 });
