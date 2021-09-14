@@ -4,7 +4,10 @@ import path from 'path';
 import * as SocketIo from 'socket.io';
 import { Server } from 'socket.io';
 import { Memoria } from './Memoria.mjs';
-import handlebars from 'express-handlebars'
+import handlebars from 'express-handlebars';
+import { renderSignUpForm, signup, renderSigninForm, signin, logout } from "../controllers/users.controller";  
+/* import { isAuthenticated } from './autenticacion';
+import { createNewProduct, renderProductos, updateProducto, borrarProducto, renderEdit } from "./controllers/products.controller"; */
 ////////////////////////////////////////////
 const app = express();
 const server = http.Server(app);
@@ -42,7 +45,7 @@ app.get('/', (req, res) => {
     res.render('index.hbs')
 });
 app.get('/api/productos/vista', (req, res) => {
-    response.render('/views/pages/index.hbs', {productos: memoria.getArray()});
+    response.render('/views/pages/productos.hbs', {productos: memoria.getArray()});
 });
 app.get('/api/productos/listar/:id', (req, res) => {
     const result = memoria.getElementById(req.params.id);
@@ -108,3 +111,11 @@ io.on("products", (socket) => {
         ioServer.sockets.emit("items", items);
     });
 });
+////////////////////////////////////////////////////////////
+
+
+router.get("/users/signup", renderSignUpForm);
+router.post("/users/signup", signup);
+router.get("/users/signin", renderSigninForm);
+router.post("/users/signin", signin);
+router.get("/users/logout", logout);
