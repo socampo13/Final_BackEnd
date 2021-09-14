@@ -8,6 +8,7 @@ import handlebars from 'express-handlebars';
 import { renderSignUpForm, signup, renderSigninForm, signin, logout } from "../controllers/users.controller";   
 import { isAuthenticated } from './autenticacion.js';
 import { createNewProduct, renderProductos, updateProducto, borrarProducto, renderEdit } from "./controllers/products.controller"; 
+import passport from 'passport';
 ////////////////////////////////////////////
 const app = express();
 const server = http.Server(app);
@@ -33,6 +34,9 @@ app.engine( 'hbs',
         partialDir: __dirname + '/views/partials',  
     })
 );
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash("success_msg");
     res.locals.error_msg = req.flash("error_msg");
@@ -48,6 +52,7 @@ server.listen(PORT, error => {
     console.log(`Server running on port ${PORT}`);
 });
 ////////////////////////////////////////////ROUTER PRODUCTOS//////////////////////////////////////////
+
 app.get('/', (req, res) => {
     res.render('index.hbs')
 });
