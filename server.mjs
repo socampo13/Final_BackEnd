@@ -5,9 +5,9 @@ import * as SocketIo from 'socket.io';
 import { Server } from 'socket.io';
 import { Memoria } from './Memoria.mjs';
 import handlebars from 'express-handlebars';
-import { renderSignUpForm, signup, renderSigninForm, signin, logout } from "../controllers/users.controller";  
-/* import { isAuthenticated } from './autenticacion';
-import { createNewProduct, renderProductos, updateProducto, borrarProducto, renderEdit } from "./controllers/products.controller"; */
+import { renderSignUpForm, signup, renderSigninForm, signin, logout } from "../controllers/users.controller";   
+import { isAuthenticated } from './autenticacion.js';
+import { createNewProduct, renderProductos, updateProducto, borrarProducto, renderEdit } from "./controllers/products.controller"; 
 ////////////////////////////////////////////
 const app = express();
 const server = http.Server(app);
@@ -33,6 +33,13 @@ app.engine( 'hbs',
         partialDir: __dirname + '/views/partials',  
     })
 );
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash("success_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    res.locals.error = req.flash("error");
+    res.locals.user = req.user || null;
+    next();
+});
  ////////////////////////////////////////////
 server.listen(PORT, error => {
     if (error) {
@@ -44,10 +51,10 @@ server.listen(PORT, error => {
 app.get('/', (req, res) => {
     res.render('index.hbs')
 });
-app.get('/api/productos/vista', (req, res) => {
+app.get('/api/productos/vista', isAuthenticated, renderProductos, (req, res) => {
     response.render('/views/pages/productos.hbs', {productos: memoria.getArray()});
 });
-app.get('/api/productos/listar/:id', (req, res) => {
+app.get('/api/productos/listar/:id', isAuthenticated, renderProductos,  (req, res) => {
     const result = memoria.getElementById(req.params.id);
 
     if(result.length > 0) {
@@ -56,7 +63,7 @@ app.get('/api/productos/listar/:id', (req, res) => {
         result.staus(404).send({error: 'Product not found'})
     }
 });
-app.post('/api/productos/guardar', (req, res) => {
+app.post('/api/productos/guardar', isAuthenticated, createNewProduct, (req, res) => {
     const producto = req.body;
 
     if(producto.precio && producto.title && producto.thumbnail){
@@ -66,14 +73,15 @@ app.post('/api/productos/guardar', (req, res) => {
         res.status(400).send({error: 'Incomplete information'})
     }
 });
-app.put('/api/productos/actualizar/:id', (req, res) => {
+app.put('/api/productos/actualizar/:id', isAuthenticated, updateProducto, (req, res) => {
     const {id} = req.params.id;
     const newProduct = req.body;
 
     memoria.updateElement(newProduct, id);
     res.send(newProduct);
 });
-app.delete('/api/productos/borrar/:id', (req, res) => {
+render.put("/api/productos/actualizar"), isAuthenticated, renderEdit;
+app.delete('/api/productos/borrar/:id', isAuthenticated, borrarProducto, (req, res) => {
     Memoria.deleteById(req.body.id)
 });
 //////////////////////////////////////////////ROUTER CARRITO/////////////////////////////////////////////

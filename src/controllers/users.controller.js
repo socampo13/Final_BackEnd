@@ -1,5 +1,4 @@
-import User from "../models/User";
-import passport from "passport";
+
 
 export const renderSignUpForm = (req, res) => res.render("users/signup");
 
