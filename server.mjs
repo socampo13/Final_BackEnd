@@ -25,8 +25,8 @@ app.set('view engine', 'hbs')
 app.engine( 'hbs',
     handlebars({
         extname: '.hbs',
-        defaultLayout: 'index.hbs',
-        layoutsDir: __dirname + '/views/pages',
+        defaultLayout: 'main',
+        layoutsDir: __dirname + '/views/layouts',
         partialDir: __dirname + '/views/partials',  
     })
 );
@@ -39,7 +39,7 @@ server.listen(PORT, error => {
 });
 ////////////////////////////////////////////ROUTER PRODUCTOS//////////////////////////////////////////
 app.get('/', (req, res) => {
-    res.render('main.hbs')
+    res.render('index.hbs')
 });
 app.get('/api/productos/vista', (req, res) => {
     response.render('/views/pages/index.hbs', {productos: memoria.getArray()});

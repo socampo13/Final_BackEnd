@@ -1,31 +1,9 @@
-const socket = io.connect();
+var express = require('express');
+var router = express.Router();
 
-socket.on("items", (data) => {
-    document.getElementById("items").innerHTML = data
-    .map(
-        (entry) => `<div>
-                        <strong>${entry.author}</strong>
-                        <em>${entry.text}</em>
-                    </div>`
-    )
-    .join(" ");
-    clearInputs();
+router.get('/', function(req, res, next) {
+    res.render('index', { title: 'Make it happen', condition: true, anyArray: [1,2,3] });
 });
 
-function clearInputs() {
-    document.getElementById("producto").value = "";
-    document.getElementById("texto").value = "";
-};
-
-function addProduct() {
-    const product = {
-        name: document.getElementById("producto"),
-        price: document.getElementById("precio"),
-        photo: document.getElementById("imagen")
-    };
-
-    socket.emit("new-item", items);
-
-    return false;
-}
+module.exports = router;
 
