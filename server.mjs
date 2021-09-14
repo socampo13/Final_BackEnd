@@ -26,8 +26,8 @@ app.engine( 'hbs',
     handlebars({
         extname: '.hbs',
         defaultLayout: 'index.hbs',
-        layoutsDir: __dirname + '/views/layouts',
-        partialDir: __dirname + '/views/partials', 
+        layoutsDir: __dirname + '/views/pages',
+        partialDir: __dirname + '/views/partials',  
     })
 );
  ////////////////////////////////////////////
