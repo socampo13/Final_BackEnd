@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "tsc": "node_modules/.bin/tsc",
+    "start": "nodemon dist/server.js",
+    "mongo": "mongod --dbpath"
   },
   "repository": {
     "type": "git",
@@ -24,6 +27,7 @@
     "connect-flash": "^0.1.1",
     "express": "^4.17.1",
     "handlebars": "^4.7.7",
+    "mongoose": "^6.0.8",
     "passport": "^0.4.1",
     "rxjs": "^7.3.0",
     "socket.io": "^4.2.0"
