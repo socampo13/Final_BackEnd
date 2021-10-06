@@ -1,6 +1,6 @@
 import { DaoFactory } from './factory';
 import { IDao } from './interface/daos/IDao';
-import express, { Request, response, Response } from 'express';
+import express, { Request, Response } from 'express';
 import path from 'path';
 import * as socketIo from 'socket.io';
 
@@ -199,6 +199,6 @@ routerCart.delete("/borrar/:id", (req: Request, res: Response) => {
     const deletesObject = dao.getProductById(Number(index));
     dao.deleteProduct(Number(index));
 
-    response.status(200).send(deletesObject);
+    res.status(200).send(deletesObject);
 });
 
