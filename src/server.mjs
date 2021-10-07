@@ -1,32 +1,30 @@
-import { DaoFactory } from './factory';
-import { IDao } from './interface/daos/IDao';
-import express, { Request, Response } from 'express';
+import { DaoFactory } from './factory.mjs';
+import { IDao } from './interface/daos/IDao.mjs';
+import express from 'express';
 import path from 'path';
 import * as socketIo from 'socket.io';
 
-const admin: boolean = true;
+const admin = true;
 const port = 8080;
 const app = express();
 const routerProducts = express.Router();
 const routerCart = express.Router();
 const __dirname = path.resolve();
 
-
-app.use(express.static(`${__dirname}/src/public`));
+app.unsubscribe(express.static(`${__dirname}/src/public`));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 
 const server = app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
-server.on("error", (error: any) => {
+server.on("error", (error) =>{
     console.log(error);
 });
 app.use("/productos", routerProducts);
 app.use("/carrito", routerCart);
 
-//Factory - Selección Dao
+//Selección Dao
 const FileSystemDao = 1;
 const MySqlDao = 2;
 const SqlDao = 3;
@@ -35,26 +33,20 @@ const MongoDbaaSDao = 5;
 const FirebaseDao = 6;
 
 const daoFactory = new DaoFactory();
-const dao: IDao = daoFactory.getDao(FileSystemDao);
+const dao = daoFactory.getDao(FileSystemDao);
 
-//Websockets
 
+// Web socket
 const io = new socketIo.Server(server);
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req, res) => {
     res.sendFile(`${__dirname}/'src/public/index.html`)
 });
-app.get("/carrito", (req: Request, res: Response) => {
+app.get("/carrito", (req, res) => {
     res.sendFile(`${__dirname}/src/public/html/cart.html`);
 });
 
-interface Message{
-    author: string;
-    date: string;
-    text: string;
-}
-
-const messages: Array<Message> = [
+const message = [
     {
         author: " ",
         date: " ",
@@ -62,39 +54,44 @@ const messages: Array<Message> = [
     },
 ];
 
-io.on("connection", (socket: any) => {
+io.on ("connection", (socket) => {
     const productsTemplate = dao.getProducts();
+
     socket.emit("loadProduct", productsTemplate);
     console.log("Online");
 
     const cartTemplate = dao.getProducts();
+
     socket.emit("addToCart", cartTemplate);
     console.log("Online");
 
     socket.emit("messages", messages);
 
-    socket.on("new-message", (data: any) => {
+    socket.on("new-message", (data) => {
         messages.push(data);
         io.sockets.emit("messages", messages);
     });
+    
 });
 
 //Router products
 
-//Products list
-routerProducts.get("/listar", (req: Request, res: Response) => {
+//Product list
+routerProducts.get("/listar", (req, res) => {
     const result = dao.getProducts();
+
     if(result !== undefined){
         res.status(200).send(JSON.stringify(result));
     }else{
-        res.status(404).send({ error: "No loaded products" });
+        res.status(404).send({ error: "No products loaded" });
     }
 });
 
-// Id products list
-routerProducts.get("/listar/:id", (req: Request, res: Response) => {
+//Id products list
+routerProducts.get("/listar/:id", (req, res) => {
     const { id } = req.params;
     const result = dao.getProductById(Number(id));
+
     if(result == null){
         res.status(404).send("Product not found");
     }else{
@@ -102,13 +99,12 @@ routerProducts.get("/listar/:id", (req: Request, res: Response) => {
     }
 });
 
-// Add product
-
-routerProducts.post("/guardar", (req: Request, res: Response) => {
+//Add product
+routerProducts.post("/guardar", (req, res) => {
     if(admin){
         const product = req.body;
         const productsTemplate = dao.getProducts();
-        dao.insertProduct(product);
+        dao.inertProduct(product);
         io.sockets.emit("loadProducts", productsTemplate);
         res.redirect("/");
     }else{
@@ -117,8 +113,7 @@ routerProducts.post("/guardar", (req: Request, res: Response) => {
 });
 
 //Update product
-
-routerProducts.put("/update/:id", (req: Request, res: Response) => {
+routerProducts.put("/update/:id", (req, res) => {
     const date = new Date();
     const dateTemplate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes}:${date.getSeconds}`;
 
@@ -129,25 +124,26 @@ routerProducts.put("/update/:id", (req: Request, res: Response) => {
         dao.updateProduct(productBody, Number(id));
         res.send(newProduct);
     }else{
-        res.send({ Error: -1, Description: "Not authorized" });
+        res.send({ Error: -1, Description: "Not authorized"});
+    }
+
+});
+
+routerProducts.delete("/borrar/:id", (req, res) => {
+    
+    if(admin){
+        const index = req.params.id;
+        const deletesObject = dao.getProductById(Number(index));
+        dao.deleteProduct(Number(index));
+
+    }else{
+        res.send({ Error: -1, Description: "Not authorized"});
     }
 });
 
-// Delete by Id
-
-routerProducts.delete("/borrar/:id", (req: Request, res: Response) => {
-    const index = req.params.id;
-    const deletesObject = dao.getProductById(Number(index));
-    dao.deleteProduct(Number(index));
-
-    res.status(200).send(deletesObject);
-});
-
-
-
 //CART ROUTES
 
-routerCart.get("/listar", (req: Request, res: Response) => {
+routerCart.get("/listar", (req, res) => {
     const result = dao.getProducts();
     if(result !== undefined){
         res.status(200).send(JSON.stringify(result));
@@ -156,7 +152,7 @@ routerCart.get("/listar", (req: Request, res: Response) => {
     }
 });
 
-routerCart.post("/listar/:id", (req: Request, res: Response) => {
+routerCart.post("/listar/:id", (req, res) => {
     const { id } = req.params;
     const result = dao.getProductById(Number(id));
     if(result == null){
@@ -166,7 +162,7 @@ routerCart.post("/listar/:id", (req: Request, res: Response) => {
     }
 });
 
-routerCart.post("/guardar", (req: Request, res: Response) => {
+routerCart.post("/guardar", (req, res) => {
     if(admin){
         const product = req.body;
         const productsTemplate = dao.getProducts();
@@ -178,7 +174,7 @@ routerCart.post("/guardar", (req: Request, res: Response) => {
     }
 });
 
-routerCart.put("/actualiar/:id", (req: Request, res: Response) => {
+routerCart.put("/actualiar/:id", (req, res) => {
     const date = new Date();
     const dateTemplate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes}:${date.getSeconds}`;
 
@@ -193,7 +189,7 @@ routerCart.put("/actualiar/:id", (req: Request, res: Response) => {
     }
 });
 
-routerCart.delete("/borrar/:id", (req: Request, res: Response) => {
+routerCart.delete("/borrar/:id", (req, res) => {
     const index = req.params.id;
 
     const deletesObject = dao.getProductById(Number(index));
@@ -201,4 +197,3 @@ routerCart.delete("/borrar/:id", (req: Request, res: Response) => {
 
     res.status(200).send(deletesObject);
 });
-

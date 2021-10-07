@@ -1,4 +1,5 @@
-const socket = io();
+import socketIo from 'socket.io';
+import Handlebars from 'handlebars';
 
 const hbsTemplate = Handlebars.compile(`
 <div class="container-table">

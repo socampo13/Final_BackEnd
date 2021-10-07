@@ -2,12 +2,12 @@
   "name": "final_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "../Final_BackEnd/src/public/js/index.js",
+  "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon src/server.mjs",
     "tsc": "node_modules/.bin/tsc",
-    "start": "nodemon dist/server.js",
+    "start": "nodemon src/server.mjs",
     "mongo": "mongod --dbpath db"
   },
   "repository": {
