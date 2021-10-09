@@ -9,8 +9,15 @@ import { IDao } from "./interface/daos/IDao.mjs";
 export class DaoFactory{
     constructor(){
 
-    let getDao = new IDao;        
-        getDao(IDao) 
+    this.FileSystemDao = new FileSystemDao();     
+    this.MySqlDao = new MySqlDao();
+    this.SqliteDao = new SqliteDao();
+    this.MongoDbDao = new MongoDbDao();
+    this.MongoDbaaSDao = new MongoDbaaSDao();
+    this.FirebaseDao = new FirebaseDao();
+    }    
+    
+        getDao(IDao){
             switch(getDao){
                 case 0: 
                     return new FileSystemDao();
@@ -33,8 +40,8 @@ export class DaoFactory{
                 default:
                     return new FileSystemDao();
                     break;
+                }
                     
-            }
+
     }
 }
-
