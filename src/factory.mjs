@@ -17,8 +17,8 @@ export class DaoFactory{
     this.FirebaseDao = new FirebaseDao();
     }    
     
-        getDao(IDao){
-            switch(getDao){
+        getDao(number){
+            switch(number){
                 case 0: 
                     return new FileSystemDao();
                     break;

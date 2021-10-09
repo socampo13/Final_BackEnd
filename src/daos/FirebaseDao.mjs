@@ -14,9 +14,9 @@ const collection = db.collection("products");
 
 export class FirebaseDao{
     constructor(){
-        products: FirebaseDao;
+        /* products: FirebaseDao;
         count: number;
-        id: number;
+        id: number; */
 
         this.products = [];
         this.id = 1;

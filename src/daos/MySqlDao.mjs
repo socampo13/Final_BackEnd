@@ -4,9 +4,9 @@ import knex from 'knex';
 
 export class MySqlDao{
     constructor(){
-        products: MySqlDao;
+        /* products: MySqlDao;
         count: number;
-        id: number;
+        id: number; */
 
         this.products = [];
         this.id = 1;
