@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { logIn } from '../middlewares/auth';
-import { productsBox } from '../models/productModels';
+import { LogIn } from '../middlewares/auth';
+import { productBox } from '../models/productModel';
 import { logger } from '../middlewares/logger';
-import { Cart } from '../apis/Cart'
-import { productCart } from '../interfaces/cartInterface';
-import { emailService } from '../services/emailService';
+import * as cartAPI from '../api/cartAPI';
+import { EmailService } from '../services/gmail';
 import config from '../config';
-import { Whatsapp } from '../services/twilioWS.mjs';
-import { SmsService } from '../services/twilio.mjs';
-import { userAPI } from '../apis/User';
+import { Whatsapp } from '../services/twilioWS';
+import { SmsService } from '../services/twilio';
+import { UserAPI } from '../api/userAPI';
 
 const router = Router();
 
@@ -39,8 +38,8 @@ router.post('/login', passport.authenticate('/login'), (req, res) => {
     res.redirect('/api/view');
 });
 
-router.get('/view', logIn, async (req, res) => {
-    const result = await productsBox.get();
+router.get('/view', LogIn, async (req, res) => {
+    const result = await productBox.get();
     const user : any = req.user;
     const userObject = {
         username: user.username,
@@ -61,11 +60,11 @@ router.post('/logout', (req, res) => {
 router.get('/userCart', async (req, res) => {
     const user : any = req.user;
     const userId = user._id;
-    const cart = await Cart.getCart(userId);
+    const cart = await cartAPI.Cart.getCart(userId);
 
     let array: Array<any> = [];
     await cart.products.forEach(async (element: {_id: string | undefined; amount: number} ) => {
-        const result = await productsBox.get(element._id);
+        const result = await productBox.get(element._id);
         const order = {
             result,
             amount: element.amount
@@ -95,17 +94,17 @@ router.get('/data', (req, res) => {
 router.post('/update', async (req, res) => {
     const {data} = req.body;
     const user : any = req.user;
-    await userAPI.updateUser(user._id, data);
+    await UserAPI.updateUser(user._id, data);
     res.redirect('/api/view');
 });
 
 router.get('/submit', async (req, res) => {
     const user : any = req.user;
     const userId = user.id;
-    const cart = await Cart.getCart(userId);
+    const cart = await cartAPI.Cart.getCart(userId);
 
     let array : Array<any> = await Promise.all(cart.products.map(async (element : any) => {
-        const result = await productsBox.get(element._id);
+        const result = await productBox.get(element._id);
         const order = {
             result,
             amount: element.amount,
@@ -132,8 +131,8 @@ router.get('/submit', async (req, res) => {
 
     const response = await Whatsapp.sendMessage(`+${user.phonenumber}`, stringOrder);
     logger.info(response);
-    await emailService.sendEmail(config.GMAIL_EMAIL, `Order from ${complete.username}`, stringOrder);
-    await Cart.deleteCart(userId);
+    await EmailService.sendEmail(config.GMAIL_EMAIL, `Order from ${complete.username}`, stringOrder);
+    await cartAPI.Cart.deleteCart(userId);
     await SmsService.sendMessage(`+${user.phonenumber}`,'Your request is in progress');
     res.redirect('/api/view');
 });

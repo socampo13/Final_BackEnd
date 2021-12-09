@@ -6,6 +6,8 @@ import { portArgument, clusterArgument } from './util/getArguments.js';
 import { logger } from './middlewares/logger';
 import cluster from 'cluster';
 
+
+
 dbConnection();
 initWsServer(myServer);
 
@@ -29,3 +31,4 @@ if(cluster.isMaster && clusterArgument){
         logger.info(`Server running on port ${port}`);
     });
 }
+
