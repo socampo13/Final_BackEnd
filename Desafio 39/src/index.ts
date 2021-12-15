@@ -1,6 +1,6 @@
 import myServer from './services/server';
 import {dbConnection} from './db/mongoDB';
-import {initWsServer} from './services/sockets';
+import {initWsServer} from './services/socket';
 import os from 'os';
 import {portArgument, clusterArgument} from './util/getArguments.js';
 import {logger} from './middlewares/logger';
@@ -12,7 +12,7 @@ dbConnection();
 initWsServer(myServer);
 
 const port = portArgument || 8080;
-const clusterArgument = clusterArgument || false;
+const clusterArguments = clusterArgument || false;
 const numCPUs = os.cpus().length;
 
 if (cluster.isMaster && clusterArgument) {
