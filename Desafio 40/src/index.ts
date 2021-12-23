@@ -5,6 +5,16 @@ import os from 'os';
 import { portArgument, clusterArgument } from './util/getArguments.js';
 import { logger } from './middlewares/logger';
 import cluster from 'cluster';
+import express from 'express';
+
+console.log(`NODE_ENV=${process.env.NODE_ENV}`);
+
+const app = express();
+
+app.listen(Number(process.PORT), process.HOST, () => 
+    console.log(`Server running on ${process.HOST}:${process.PORT}`)
+)
+
 
 
 dbConnection();
