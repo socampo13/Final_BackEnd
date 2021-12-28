@@ -18,4 +18,6 @@ export default {
   TEST_PHONENUMBER: process.env.TEST_PHONENUMBER || "testPhonenumber",
   TWILIO_WHATSAPP_NUMBER:
     process.env.TWILIO_WHATSAPP_NUMBER || "twilioWspNumber",
+  TIPO_PERSISTENCIA: process.env.TIPO_PERSISTENCIA || "MEMORIA",
+  GRAPHIQL: process.env.GRAPHIQL || "true",
 };
